@@ -7,41 +7,48 @@
   <meta name="description" content="Швидке замовлення у Viber в один клік.">
   <style>
     :root{
-      /* темный неон + пудровые отблески */
       --bg1:#0e1023; --bg2:#171b36;
       --halo1:#5b2bd3; --halo2:#00c2ff55; --halo3:#ff78a855;
-      --accent1:#7c6cf6; --accent2:#ff86b3; /* фиолет → розовый */
+      --accent1:#7c6cf6; --accent2:#ff86b3;
       --glass:rgba(255,255,255,.08);
       --stroke:rgba(255,255,255,.14);
       --text:#e9e9f2; --muted:#b9bad2;
-      --chip:#ffffff10; --chipStroke:rgba(255,255,255,.22);
+      --chipStroke:rgba(255,255,255,.22);
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    html,body{height:100%}
     body{
-      margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      margin:0;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
       color:var(--text);
       background:
         radial-gradient(1200px 800px at 12% -10%, var(--halo1) 0%, transparent 55%),
         radial-gradient(900px 600px at 100% 0%, var(--halo2) 0%, transparent 60%),
         radial-gradient(800px 540px at 8% 120%, var(--halo3) 0%, transparent 65%),
         linear-gradient(180deg,var(--bg1),var(--bg2));
-      padding:28px; display:flex; align-items:center; justify-content:center; overflow-x:hidden;
+      padding:24px max(16px, env(safe-area-inset-left)) 24px max(16px, env(safe-area-inset-right));
+      overflow-x:hidden; /* возвращаем, но убираем все элементы, выходящие наружу */
     }
-    .wrap{width:100%; max-width:1080px}
+    .wrap{max-width:1080px; margin:0 auto}
     .card{
-      position:relative; padding:28px; border-radius:28px;
+      padding:24px;
+      border-radius:24px;
       backdrop-filter: blur(18px);
       background: var(--glass);
       border:1px solid var(--stroke);
       box-shadow: 0 30px 80px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
-      overflow:hidden;
+      overflow:hidden; /* ничего не выползает */
     }
-    .hero{display:grid; grid-template-columns:1.2fr .8fr; gap:28px}
-    @media (max-width:900px){ .hero{grid-template-columns:1fr} }
+    .hero{display:grid; grid-template-columns:1.2fr .8fr; gap:24px}
+    @media (max-width:960px){ .hero{grid-template-columns:1fr} }
 
-    h1{font-size:40px; line-height:1.08; margin:0 0 10px}
+    h1{
+      font-size:clamp(26px, 6.5vw, 40px);
+      line-height:1.15;
+      margin:0 0 10px;
+      word-break:keep-all; overflow-wrap:normal;
+    }
+    .nowrap{white-space:nowrap}
     p{margin:6px 0; color:var(--muted); line-height:1.65}
 
     .badge{
@@ -52,60 +59,58 @@
     }
 
     .panel{
-      position:relative;
       backdrop-filter: blur(16px);
       background: linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.05));
       border:1px solid rgba(255,255,255,.15);
-      border-radius:22px; padding:18px;
+      border-radius:18px; padding:16px;
       box-shadow: 0 18px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
     }
 
     .cta-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:16px}
 
-    /* основная градиентная кнопка */
     .btn{
-      appearance:none; border:0; border-radius:16px; padding:16px 22px; font-weight:800; cursor:pointer;
+      appearance:none; border:0; border-radius:14px; padding:15px 20px; font-weight:800; cursor:pointer;
       color:#fff; background:linear-gradient(135deg,var(--accent1), var(--accent2));
       box-shadow: 0 16px 38px rgba(124,108,246,.45);
       transition: transform .12s ease, filter .2s ease, box-shadow .2s ease;
     }
     .btn:hover{transform:translateY(-1px) scale(1.01); filter:brightness(1.06)}
 
-    .sep{height:1px; background:rgba(255,255,255,.14); margin:18px 0}
+    .sep{height:1px; background:rgba(255,255,255,.14); margin:16px 0}
 
-    /* стеклянные бренд-чипы соцсетей */
     .chips{display:flex; gap:12px; flex-wrap:wrap}
     .chip{
-      --glow:#ffffff33;
       display:inline-flex; align-items:center; gap:10px; text-decoration:none;
-      padding:12px 16px; border-radius:999px; font-weight:700; color:var(--text);
+      padding:11px 14px; border-radius:999px; font-weight:700; color:var(--text);
       background:linear-gradient(180deg, #ffffff14, #ffffff08);
       border:1px solid var(--chipStroke);
       box-shadow: 0 10px 28px rgba(0,0,0,.35), 0 0 0 1px inset rgba(255,255,255,.06);
-      transition: transform .12s ease, box-shadow .2s ease, filter .2s ease;
+      transition: transform .12s ease, filter .2s ease;
     }
     .chip:hover{transform:translateY(-1px); filter:brightness(1.03)}
     .chip .icon{width:18px; height:18px; display:inline-block}
-
-    /* вариации — лёгкое свечение по бренду */
-    .chip.ig{box-shadow: 0 10px 28px rgba(221,70,136,.35), 0 0 24px 2px rgba(221,70,136,.25) inset;}
-    .chip.fb{box-shadow: 0 10px 28px rgba(24,119,242,.28), 0 0 24px 2px rgba(24,119,242,.22) inset;}
+    .chip.ig{box-shadow: 0 10px 28px rgba(221,70,136,.35), 0 0 24px 2px rgba(221,70,136,.22) inset;}
+    .chip.fb{box-shadow: 0 10px 28px rgba(24,119,242,.28), 0 0 24px 2px rgba(24,119,242,.20) inset;}
     .chip.rv{box-shadow: 0 10px 28px rgba(255,199,0,.28), 0 0 24px 2px rgba(255,199,0,.22) inset;}
 
-    /* sticky-кнопка */
     .fab{
-      position:fixed; right:18px; bottom:18px; z-index:50;
-      border-radius:16px; padding:16px 20px; font-weight:900; color:#fff;
+      position:fixed; right:max(16px, env(safe-area-inset-right)); bottom:max(16px, env(safe-area-inset-bottom));
+      border-radius:14px; padding:14px 18px; font-weight:900; color:#fff;
       background:linear-gradient(135deg,var(--accent1), var(--accent2));
       box-shadow: 0 18px 40px rgba(124,108,246,.55);
       cursor:pointer; border:0;
+      z-index:50;
       animation: float 3s ease-in-out infinite;
     }
     @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-    /* reveal-анимации */
     .reveal{opacity:0; transform:translateY(12px); transition:.6s ease}
     .reveal.show{opacity:1; transform:none}
+
+    /* мобильные правки */
+    @media (max-width:420px){
+      .card{padding:18px}
+    }
   </style>
 </head>
 <body>
@@ -114,7 +119,7 @@
       <div class="hero">
         <div class="reveal">
           <span class="badge">⚡ Замовлення за 1 хв • Без форм</span>
-          <h1 style="margin-top:8px">Замовляйте у Viber — швидко, зручно, в один клік</h1>
+          <h1>Замовляйте у <span class="nowrap">Viber</span> — швидко, зручно, в один клік</h1>
 
           <div class="cta-row">
             <button id="openBtn" class="btn">Замовити за 1 клік</button>
@@ -125,7 +130,6 @@
           <div class="chips">
             <a class="chip ig" href="https://www.instagram.com/stylish.krop" target="_blank" rel="noopener" aria-label="Instagram">
               <span class="icon" aria-hidden="true">
-                <!-- Instagram gradient stroke -->
                 <svg viewBox="0 0 24 24" fill="none"><radialGradient id="igG" cx="0" cy="0" r="1" gradientTransform="translate(6 20) scale(24)"><stop stop-color="#feda75"/><stop offset=".5" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></radialGradient><path d="M12 7.2a4.8 4.8 0 1 0 0 9.6 4.8 4.8 0 0 0 0-9.6Zm0-4.2c3.3 0 3.7 0 5 .1 1.2.1 1.9.3 2.4.5.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.5.4 1.2.5 2.4.1 1.3.1 1.7.1 5s0 3.7-.1 5c-.1 1.2-.3 1.9-.5 2.4-.2.6-.5 1-1 1.4-.4.4-.8.7-1.4.9-.5.2-1.2.4-2.4.5-1.3.1-1.7.1-5 .1s-3.7 0-5-.1c-1.2-.1-1.9-.3-2.4-.5-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.5-.4-1.2-.5-2.4C2 15.7 2 15.3 2 12s0-3.7.1-5c.1-1.2.3-1.9.5-2.4.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.5-.2 1.2-.4 2.4-.5C8.3 2 8.7 2 12 2Z" stroke="url(#igG)" stroke-width="1.4"/></svg>
               </span>
               Instagram
@@ -153,15 +157,15 @@
 
           <div class="sep"></div>
           <h3 style="margin:0 0 8px">Відгуки</h3>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-            <div class="panel reveal" style="padding:14px"><strong style="color:#9be7c4">Марина К.</strong> Замовлення прийшло вже завтра. Дуже приємна консультація!</div>
-            <div class="panel reveal" style="padding:14px"><strong style="color:#9be7c4">Олег Г.</strong> Написав у Viber — оформили за 2 хв. Рекомендую.</div>
-            <div class="panel reveal" style="padding:14px"><strong style="color:#9be7c4">Ірина П.</strong> Якість супер, швидка доставка і класний сервіс.</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div class="panel reveal" style="padding:12px"><strong style="color:#9be7c4">Марина К.</strong> Замовлення прийшло вже завтра. Дуже приємна консультація!</div>
+            <div class="panel reveal" style="padding:12px"><strong style="color:#9be7c4">Олег Г.</strong> Написав у Viber — оформили за 2 хв. Рекомендую.</div>
+            <div class="panel reveal" style="padding:12px"><strong style="color:#9be7c4">Ірина П.</strong> Якість супер, швидка доставка і класний сервіс.</div>
           </div>
         </div>
       </div>
 
-      <footer class="reveal" style="margin-top:16px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <footer class="reveal" style="margin-top:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
         <span style="color:#a9abd0">© 2025 Stylny</span>
         <a style="color:#a9abd0;text-decoration:none" href="#top">Нагору ↑</a>
       </footer>
@@ -172,24 +176,24 @@
   <button class="fab" id="fabCta" aria-label="Замовити у Viber">Замовити за 1 клік</button>
 
 <script>
-  /* Viber deep link (по клику) */
   const PHONE_E164 = '+380961638781';
   const UTM = 'utm_source=tiktok&utm_medium=bio&utm_campaign=viber_landing';
+  const openBtn = document.getElementById('openBtn');
+  const fab = document.getElementById('fabCta');
+
   function buildViberLink(){
     const deep = 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
     return deep + (UTM ? (deep.includes('?') ? '&' : '?') + UTM : '');
   }
-  const openBtn = document.getElementById('openBtn');
-  const fab = document.getElementById('fabCta');
   function openViber(){ window.location = buildViberLink(); }
+
   openBtn.addEventListener('click', openViber);
   fab.addEventListener('click', openViber);
 
-  /* Плавное проявление блоков при скролле */
   const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
+    for (const e of entries){
       if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); }
-    });
+    }
   },{threshold:.15});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>
