@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Замовлення у Viber</title>
+  <meta name="description" content="Швидке замовлення у Viber. Консультація за 1 хвилину.">
+  <style>
+    :root{
+      --bg1:#0f1226; --bg2:#1a1f3a; --accent:#7360f2; --glass:rgba(255,255,255,0.08);
+      --text:#eaeaf2; --muted:#b8b9c9; --ok:#22c55e;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 20% -10%,#5b2bd3 0%,transparent 55%),
+                  radial-gradient(900px 600px at 100% 0%,#00c2ff33 0%,transparent 60%),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      display:flex; align-items:center; justify-content:center; padding:32px;
+    }
+    .wrap{width:100%; max-width:980px}
+    .card{
+      backdrop-filter: blur(18px);
+      background: var(--glass);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+      padding: 28px;
+    }
+    .hero{
+      display:grid; grid-template-columns: 1.2fr .8fr; gap:28px;
+    }
+    @media (max-width:880px){ .hero{grid-template-columns:1fr} }
+    h1{font-size:34px; margin:0 0 8px}
+    p{margin:6px 0; color:var(--muted); line-height:1.6}
+    .badge{display:inline-flex; align-items:center; gap:8px; font-size:13px; color:#d7fbe1; background:#14351f; border:1px solid #1f6b3a; padding:6px 10px; border-radius:999px}
+    .panel{
+      backdrop-filter: blur(14px);
+      background: linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.06));
+      border:1px solid rgba(255,255,255,0.18);
+      border-radius:18px; padding:18px;
+    }
+    .cta-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:14px}
+    .btn{
+      appearance:none; border:0; border-radius:14px; padding:14px 18px; font-weight:600; cursor:pointer;
+      color:white; background:var(--accent); transition:transform .08s ease, box-shadow .2s ease;
+      box-shadow: 0 12px 28px rgba(115,96,242,.35);
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.secondary{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.18)}
+    .status{margin-top:8px; font-size:14px}
+    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+    @media (max-width:880px){ .grid-3{grid-template-columns:1fr} }
+    .rev{padding:16px; border-radius:16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12)}
+    .rev strong{display:block; margin-bottom:6px}
+    .socials{display:flex; gap:10px; flex-wrap:wrap}
+    .chip{display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:999px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.16); text-decoration:none; color:var(--text); font-weight:600}
+    .chip:hover{background:rgba(255,255,255,0.10)}
+    .v-sep{height:1px; background:rgba(255,255,255,0.12); margin:20px 0}
+    .dim{color:var(--muted); font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero">
+        <div>
+          <span class="badge">⚡ Консультація за 1 хв • Без форм</span>
+          <h1>Напишіть нам у Viber — швидко оформимо замовлення</h1>
+          <p id="status">Спроба автоматично відкрити Viber…</p>
+          <div class="cta-row">
+            <button id="openBtn" class="btn">Написати в Viber</button>
+            <a id="installLink" class="btn secondary" href="#" target="_blank" rel="noopener">Встановити Viber</a>
+          </div>
+          <div class="v-sep"></div>
+          <div class="socials">
+            <a class="chip" id="waLink" target="_blank" rel="noopener">💬 WhatsApp</a>
+            <a class="chip" id="tgLink" target="_blank" rel="noopener">✈️ Telegram</a>
+            <a class="chip" id="fbmLink" target="_blank" rel="noopener">📘 Messenger</a>
+            <a class="chip" href="https://www.facebook.com/" target="_blank" rel="noopener">⭐ Відгуки (Facebook)</a>
+          </div>
+          <p class="dim">Якщо Viber не відкрився — натисніть кнопку вище або скористайтесь іншим месенджером.</p>
+        </div>
+        <div class="panel">
+          <h3 style="margin:0 0 8px">Переваги</h3>
+          <p>• Живий менеджер — відповімо на питання, підберемо розмір/модель.</p>
+          <p>• Оформлення замовлення без форм.</p>
+          <p>• Швидше, ніж дзвінок.</p>
+          <div class="v-sep"></div>
+          <h3 style="margin:0 0 8px">Відгуки</h3>
+          <div class="grid-3">
+            <div class="rev"><strong>Марина К.</strong> Отримала на наступний день. Дякую за консультацію — все підібрали ідеально!</div>
+            <div class="rev"><strong>Олег Г.</strong> Зручно, написав у Viber та оформив за 2 хвилини.</div>
+            <div class="rev"><strong>Ірина П.</strong> Рекомендую! Приємний менеджер і швидка доставка.</div>
+          </div>
+        </div>
+      </div>
+      <p class="dim" style="margin-top:16px">© 2025 Stylny — сервіс швидких замовлень</p>
+    </div>
+  </div>
+
+<script>
+  // ===== Налаштування (замінюй під себе) =====
+  const CHAT_URI   = '';                      // якщо є public Viber: 'myshopua' (залишай '' якщо працюємо по номеру)
+  const PHONE_E164 = '+380975503559';         // твій номер у форматі +380...
+  const UTM        = 'utm_source=tiktok&utm_medium=bio&utm_campaign=viber_landing';
+
+  // Додаткові месенджери (замінюй за потреби)
+  const WHATSAPP_NUMBER = '380975503559';     // без +
+  const WHATSAPP_TEXT   = 'Вітаю! Хочу зробити замовлення.';
+  const TELEGRAM_HANDLE = 'your_telegram_username';  // t.me/<handle>
+  const FB_MESSENGER_ID = 'yourPageOrId';     // m.me/<page>
+
+  // ============================================
+  const statusEl = document.getElementById('status');
+  const openBtn  = document.getElementById('openBtn');
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const storeUrl = isIOS
+      ? 'https://apps.apple.com/app/id382617920'
+      : 'https://play.google.com/store/apps/details?id=com.viber.voip';
+  document.getElementById('installLink').href = storeUrl;
+
+  // Лінки соцмереж
+  document.getElementById('waLink').href  = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_TEXT)}`;
+  document.getElementById('tgLink').href  = `https://t.me/${TELEGRAM_HANDLE}`;
+  document.getElementById('fbmLink').href = `https://m.me/${FB_MESSENGER_ID}`;
+
+  function getDeepLink(){
+    if (CHAT_URI && CHAT_URI.trim() !== '') return 'viber://pa?chatURI=' + encodeURIComponent(CHAT_URI);
+    if (PHONE_E164 && PHONE_E164.trim() !== '') return 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
+    return null;
+    }
+  function tryOpenViber(){
+    const deep = getDeepLink();
+    if(!deep){ statusEl.textContent='Посилання Viber не налаштоване.'; return; }
+    const url = deep + (UTM ? (deep.includes('?') ? '&' : '?') + UTM : '');
+    statusEl.textContent = 'Переадресація… Якщо нічого не сталося — натисніть кнопку ще раз або скористайтесь іншими месенджерами.';
+    window.location = url;
+    setTimeout(()=>{ statusEl.textContent = 'Не відкрився Viber? Спробуйте ще раз або натисніть інший месенджер вище.'; }, 1200);
+  }
+  window.addEventListener('load', tryOpenViber);
+  openBtn.addEventListener('click', tryOpenViber);
+</script>
+</body>
+</html>
