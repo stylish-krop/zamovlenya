@@ -10,9 +10,9 @@
       --bg1:#0e1023; --bg2:#171b36;
       --halo1:#5b2bd3; --halo2:#00c2ff55; --halo3:#ff78a855;
       --accent1:#7c6cf6; --accent2:#ff86b3;
+      --text:#e9e9f2; --muted:#b9bad2;
       --glass:rgba(255,255,255,.08);
       --stroke:rgba(255,255,255,.14);
-      --text:#e9e9f2; --muted:#b9bad2;
       --chipStroke:rgba(255,255,255,.22);
     }
     *{box-sizing:border-box}
@@ -69,13 +69,55 @@
 
     .cta-row{display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; max-width:100%}
 
-    .btn{
-      appearance:none; border:0; border-radius:14px; padding:15px 20px; font-weight:800; cursor:pointer;
-      color:#fff; background:linear-gradient(135deg,var(--accent1), var(--accent2));
-      box-shadow: 0 16px 38px rgba(124,108,246,.45);
-      transition: transform .12s ease, filter .2s ease, box-shadow .2s ease;
+    /* ======= iOS-style Glass CTA ======= */
+    .btn, .fab{
+      position:relative; isolation:isolate;
+      appearance:none; border:0; border-radius:16px;
+      padding:15px 20px; font-weight:900; color:#fff; cursor:pointer;
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 46px rgba(124,108,246,.35), inset 0 1px 0 rgba(255,255,255,.35);
+      transition: transform .15s ease, filter .25s ease, box-shadow .25s ease;
+      overflow:hidden;
     }
-    .btn:hover{transform:translateY(-1px) scale(1.01); filter:brightness(1.06)}
+    /* анимированный градиентный кант */
+    .btn::before, .fab::before{
+      content:""; position:absolute; inset:0; border-radius:inherit; z-index:-1;
+      padding:1.5px;
+      background: conic-gradient(from var(--ang,0deg),
+        #8f80ff, #ff84c2, #ffd28b, #8f80ff);
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box, 
+        linear-gradient(#000 0 0); 
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      animation: spin 6s linear infinite;
+      opacity:.9;
+    }
+    /* мягкий «shimmer» внутри */
+    .btn::after, .fab::after{
+      content:""; position:absolute; inset:-20% -60%;
+      background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 48%, transparent 66%);
+      transform: translateX(-40%);
+      animation: shimmer 4.5s ease-in-out infinite;
+      pointer-events:none;
+    }
+    .btn:hover, .fab:hover{transform:translateY(-1px); filter:brightness(1.06)}
+    .btn:active, .fab:active{transform:translateY(0)}
+    .btn{font-weight:800}
+    .fab{
+      position:fixed; right:max(16px, env(safe-area-inset-right)); bottom:max(16px, env(safe-area-inset-bottom));
+      z-index:50; padding:14px 18px; border-radius:14px;
+      max-width:calc(100vw - 32px);
+      animation: breathe 3.2s ease-in-out infinite;
+    }
+    @keyframes spin{to{--ang:360deg}}
+    @keyframes shimmer{0%{transform:translateX(-60%)} 100%{transform:translateX(60%)}}
+    @keyframes breathe{0%,100%{box-shadow:0 18px 40px rgba(124,108,246,.55)} 50%{box-shadow:0 22px 50px rgba(124,108,246,.68)}}
+
+    /* уважение к reduce motion */
+    @media (prefers-reduced-motion:reduce){
+      .btn::before, .fab::before, .btn::after, .fab::after, .fab{animation:none}
+    }
 
     .sep{height:1px; background:rgba(255,255,255,.14); margin:16px 0; max-width:100%}
 
@@ -96,7 +138,6 @@
 
     /* ===== Reviews slider ===== */
     .reviews-wrap{position:relative; max-width:100%}
-    /* маски краёв (сверху лежат полупрозрачные градиенты) */
     .reviews-wrap::before, .reviews-wrap::after{
       content:""; position:absolute; top:0; bottom:0; width:28px; z-index:2; pointer-events:none;
       background:linear-gradient(to right, rgba(23,27,54,1), rgba(23,27,54,0));
@@ -105,14 +146,13 @@
       right:0; left:auto;
       background:linear-gradient(to left, rgba(23,27,54,1), rgba(23,27,54,0));
     }
-
     .reviews{
       display:flex; gap:12px; overflow-x:auto; overflow-y:hidden; padding-bottom:6px;
       scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; max-width:100%;
     }
-    .reviews::-webkit-scrollbar{height:0} /* скрываем полоску */
+    .reviews::-webkit-scrollbar{height:0}
     .review-card{
-      flex:0 0 78%; max-width:78%;  /* ширина карточки на мобилке */
+      flex:0 0 78%; max-width:78%;
       scroll-snap-align:start;
       border-radius:16px; padding:12px;
       backdrop-filter: blur(12px);
@@ -122,23 +162,11 @@
     }
     .review-card strong{color:#9be7c4}
 
-    /* на широких экранах — сетка 3 колонки без скролла */
     @media (min-width:900px){
       .reviews-wrap::before, .reviews-wrap::after{display:none}
       .reviews{display:grid; grid-template-columns:repeat(3,1fr); overflow:visible; gap:12px}
       .review-card{flex:none; max-width:100%}
     }
-
-    .fab{
-      position:fixed; right:max(16px, env(safe-area-inset-right)); bottom:max(16px, env(safe-area-inset-bottom));
-      border-radius:14px; padding:14px 18px; font-weight:900; color:#fff;
-      background:linear-gradient(135deg,var(--accent1), var(--accent2));
-      box-shadow: 0 18px 40px rgba(124,108,246,.55);
-      cursor:pointer; border:0; z-index:50;
-      animation: float 3s ease-in-out infinite;
-      max-width:calc(100vw - 32px);
-    }
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
     .reveal{opacity:0; transform:translateY(12px); transition:.6s ease}
     .reveal.show{opacity:1; transform:none}
@@ -211,7 +239,6 @@
                 <strong>Ірина П.</strong><br/>
                 Якість супер, швидка доставка і класний сервіс.
               </div>
-              <!-- можно добавить ещё карточек — просто скопируй блок .review-card -->
             </div>
           </div>
           <!-- /Слайдер отзывов -->
