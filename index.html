@@ -15,10 +15,8 @@
       --text:#e9e9f2; --muted:#b9bad2;
       --chipStroke:rgba(255,255,255,.22);
     }
-
     *{box-sizing:border-box}
     html,body{height:100%; width:100%}
-    /* ВАЖНО: ничего не шире экрана */
     body{
       margin:0; overflow-x:hidden;
       font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
@@ -33,8 +31,7 @@
 
     .wrap{max-width:1080px; width:100%; margin:0 auto}
     .card{
-      max-width:100%; width:100%;
-      padding:24px; border-radius:24px;
+      width:100%; padding:24px; border-radius:24px;
       backdrop-filter: blur(18px);
       background: var(--glass);
       border:1px solid var(--stroke);
@@ -42,13 +39,8 @@
       overflow:hidden;
     }
 
-    .hero{
-      display:grid; grid-template-columns:1.2fr .8fr; gap:24px;
-      max-width:100%;
-    }
-    /* КЛЮЧЕВОЙ ФИКС: дети грида могут расширять контейнер — запрещаем */
+    .hero{display:grid; grid-template-columns:1.2fr .8fr; gap:24px; max-width:100%}
     .hero > *{min-width:0}
-
     @media (max-width:960px){ .hero{grid-template-columns:1fr} }
 
     h1{
@@ -102,6 +94,41 @@
     .chip.fb{box-shadow: 0 10px 28px rgba(24,119,242,.28), 0 0 24px 2px rgba(24,119,242,.20) inset;}
     .chip.rv{box-shadow: 0 10px 28px rgba(255,199,0,.28), 0 0 24px 2px rgba(255,199,0,.22) inset;}
 
+    /* ===== Reviews slider ===== */
+    .reviews-wrap{position:relative; max-width:100%}
+    /* маски краёв (сверху лежат полупрозрачные градиенты) */
+    .reviews-wrap::before, .reviews-wrap::after{
+      content:""; position:absolute; top:0; bottom:0; width:28px; z-index:2; pointer-events:none;
+      background:linear-gradient(to right, rgba(23,27,54,1), rgba(23,27,54,0));
+    }
+    .reviews-wrap::after{
+      right:0; left:auto;
+      background:linear-gradient(to left, rgba(23,27,54,1), rgba(23,27,54,0));
+    }
+
+    .reviews{
+      display:flex; gap:12px; overflow-x:auto; overflow-y:hidden; padding-bottom:6px;
+      scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; max-width:100%;
+    }
+    .reviews::-webkit-scrollbar{height:0} /* скрываем полоску */
+    .review-card{
+      flex:0 0 78%; max-width:78%;  /* ширина карточки на мобилке */
+      scroll-snap-align:start;
+      border-radius:16px; padding:12px;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.05));
+      border:1px solid rgba(255,255,255,.15);
+      box-shadow: 0 12px 28px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.06);
+    }
+    .review-card strong{color:#9be7c4}
+
+    /* на широких экранах — сетка 3 колонки без скролла */
+    @media (min-width:900px){
+      .reviews-wrap::before, .reviews-wrap::after{display:none}
+      .reviews{display:grid; grid-template-columns:repeat(3,1fr); overflow:visible; gap:12px}
+      .review-card{flex:none; max-width:100%}
+    }
+
     .fab{
       position:fixed; right:max(16px, env(safe-area-inset-right)); bottom:max(16px, env(safe-area-inset-bottom));
       border-radius:14px; padding:14px 18px; font-weight:900; color:#fff;
@@ -109,14 +136,13 @@
       box-shadow: 0 18px 40px rgba(124,108,246,.55);
       cursor:pointer; border:0; z-index:50;
       animation: float 3s ease-in-out infinite;
-      max-width:calc(100vw - 32px); /* на очень узких экранах */
+      max-width:calc(100vw - 32px);
     }
     @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
     .reveal{opacity:0; transform:translateY(12px); transition:.6s ease}
     .reveal.show{opacity:1; transform:none}
 
-    /* компактнее на узких */
     @media (max-width:420px){
       body{padding:18px}
       .card{padding:18px}
@@ -148,7 +174,7 @@
 
             <a class="chip fb" href="https://www.facebook.com/stylish.krop" target="_blank" rel="noopener" aria-label="Facebook">
               <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none"><path d="M13.5 10.5V8.8c0-1 .2-1.3 1.3-1.3h1.2V5h-1.8c-2.2 0-3.2 1-3.2 3.1v2.4H9v2.5h2v6h2.5v-6h1.8l.3-2.5х-2.1Z" fill="#1877F2"/></svg>
+                <svg viewBox="0 0 24 24" fill="none"><path d="M13.5 10.5V8.8c0-1 .2-1.3 1.3-1.3h1.2V5h-1.8c-2.2 0-3.2 1-3.2 3.1v2.4H9v2.5h2v6h2.5v-6h1.8l.3-2.5h-2.1Z" fill="#1877F2"/></svg>
               </span>
               Facebook
             </a>
@@ -167,12 +193,28 @@
           <p>• Швидко: відповідь за 1 хвилину.</p>
 
           <div class="sep"></div>
+
           <h3 style="margin:0 0 8px">Відгуки</h3>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:100%">
-            <div class="panel reveal" style="padding:12px"><strong style="color:#9be7c4">Марина К.</strong> Замовлення прийшло вже завтра. Дуже приємна консультація!</div>
-            <div class="panel reveal" style="padding:12px"><strong style="color:#9be7c4">Олег Г.</strong> Написав у Viber — оформили за 2 хв. Рекомендую.</div>
-            <div class="panel reveal" style="padding:12px"><strong style="color:#9be7c4">Ірина П.</strong> Якість супер, швидка доставка і класний сервіс.</div>
+
+          <!-- Слайдер отзывов -->
+          <div class="reviews-wrap">
+            <div class="reviews" id="reviews">
+              <div class="review-card">
+                <strong>Марина К.</strong><br/>
+                Замовлення прийшло вже завтра. Дуже приємна консультація!
+              </div>
+              <div class="review-card">
+                <strong>Олег Г.</strong><br/>
+                Написав у Viber — оформили за 2 хв. Рекомендую.
+              </div>
+              <div class="review-card">
+                <strong>Ірина П.</strong><br/>
+                Якість супер, швидка доставка і класний сервіс.
+              </div>
+              <!-- можно добавить ещё карточек — просто скопируй блок .review-card -->
+            </div>
           </div>
+          <!-- /Слайдер отзывов -->
         </div>
       </div>
 
@@ -199,6 +241,7 @@
   document.getElementById('openBtn').addEventListener('click', openViber);
   document.getElementById('fabCta').addEventListener('click', openViber);
 
+  // reveal-анимации
   const io = new IntersectionObserver((entries)=>{
     for (const e of entries){
       if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); }
