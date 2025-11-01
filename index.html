@@ -25,55 +25,21 @@
       display:grid; place-items:center;
       color:var(--text);
     }
-    .wrap{
-      width:100%; max-width:520px;
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:0 14px 40px rgba(39, 22, 120, 0.15);
-      overflow:hidden;
-      border:1px solid #eee;
-    }
-    .header{
-      padding:18px 22px 10px;
-      text-align:center;
-    }
-    .logo{
-      width:64px; height:64px; margin:12px auto 10px;
-      display:grid; place-items:center;
-      border-radius:16px; background:#edeaff;
-      box-shadow: inset 0 0 0 2px rgba(111,90,243,.08);
-      font-size:36px;
-    }
-    h1{
-      margin:8px 0 6px; font-size:28px; line-height:1.2; color:var(--primary);
-      letter-spacing:.2px; font-weight:800;
-    }
-    .status{ color:var(--muted); font-size:16px; margin:0 20px 14px; }
-
-    .warn{
-      background:var(--warn-bg); border:1px solid var(--warn-border);
-      border-radius:14px; padding:14px 16px; margin:10px 20px 14px;
-      font-size:16px; line-height:1.5;
-    }
+    .wrap{width:100%; max-width:520px; background:var(--card); border-radius:var(--radius); box-shadow:0 14px 40px rgba(39,22,120,.15); overflow:hidden; border:1px solid #eee}
+    .header{padding:18px 22px 10px; text-align:center}
+    .logo{width:64px; height:64px; margin:12px auto 10px; display:grid; place-items:center; border-radius:16px; background:#edeaff; box-shadow: inset 0 0 0 2px rgba(111,90,243,.08); font-size:36px}
+    h1{margin:8px 0 6px; font-size:28px; line-height:1.2; color:var(--primary); letter-spacing:.2px; font-weight:800}
+    .status{ color:var(--muted); font-size:16px; margin:0 20px 14px }
+    .warn{ background:var(--warn-bg); border:1px solid var(--warn-border); border-radius:14px; padding:14px 16px; margin:10px 20px 14px; font-size:16px; line-height:1.5 }
     .warn b{display:block; margin-bottom:8px}
     .warn ol{margin:0 0 0 18px; padding:0}
     .warn li{margin:4px 0}
-
-    .cta{
-      display:block; width:calc(100% - 40px); margin:12px auto 18px; text-align:center;
-      background:var(--primary); color:#fff; border:none; cursor:pointer; text-decoration:none;
-      font-size:18px; font-weight:700; border-radius:999px; padding:16px 20px;
-      box-shadow:0 8px 18px rgba(111,90,243,.35);
-    }
+    .cta{ display:block; width:calc(100% - 40px); margin:12px auto 6px; text-align:center; background:var(--primary); color:#fff; border:none; cursor:pointer; text-decoration:none; font-size:18px; font-weight:700; border-radius:999px; padding:16px 20px; box-shadow:0 8px 18px rgba(111,90,243,.35) }
     .cta:active{transform:translateY(1px)}
-
+    .install{ text-align:center; margin-bottom:18px }
+    .install a{ color:#2563eb; text-decoration:none; font-size:15px }
     .footer{ text-align:center; color:#6a6a6a; font-size:14px; padding:0 0 22px }
-
-    @media (max-width:420px){
-      h1{font-size:24px}
-      .warn{font-size:15px}
-      .cta{font-size:17px}
-    }
+    @media (max-width:420px){ h1{font-size:24px} .warn{font-size:15px} .cta{font-size:17px} }
   </style>
 </head>
 <body>
@@ -94,37 +60,69 @@
       </ol>
     </section>
 
-    <a id="openBtn" class="cta" role="button" href="#">Написати в Viber</a>
+    <a id="openBtn" class="cta" role="button">Написати в Viber</a>
+    <div class="install" id="install"></div>
     <div class="footer">Якщо нічого не сталося — натисніть кнопку «Написати в Viber».</div>
   </main>
 
 <script>
-  // ====== Налаштування ======
-  const PHONE_E164 = '+380961638781'; // новий номер
-  // ===========================
+  // ===== Налаштування =====
+  const PHONE_E164 = '+380961638781';
+  const VIBER_URI = 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
+  const ANDROID_INTENT = `intent://chat?number=${encodeURIComponent(PHONE_E164)}#Intent;scheme=viber;package=com.viber.voip;end`;
+  const IOS_STORE = 'https://apps.apple.com/app/id382617920';
+  const ANDROID_STORE = 'https://play.google.com/store/apps/details?id=com.viber.voip';
+  // ========================
 
-  const status = document.getElementById('status');
+  const statusEl = document.getElementById('status');
   const openBtn = document.getElementById('openBtn');
+  const installBox = document.getElementById('install');
 
-  function getViberLink(){
-    return 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
+  const ua = navigator.userAgent || '';
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isTikTok = /TikTok|TTWebView/i.test(ua);
+
+  // зробимо кнопку працюючою і як <a href=...>, і через JS
+  openBtn.setAttribute('href', VIBER_URI);
+  openBtn.addEventListener('click', function(ev){
+    // не блокуємо стандартну навігацію повністю; деякі webview вимагають gesture
+    ev.preventDefault();
+    tryOpen(true);
+  });
+
+  function showInstall(){
+    const url = isIOS ? IOS_STORE : ANDROID_STORE;
+    installBox.innerHTML = `Немає Viber? <a href="${url}" target="_blank" rel="noopener">Встановити Viber</a>`;
   }
 
-  function go(){
-    const link = getViberLink();
-    if(!link){
-      status.textContent = 'Посилання не налаштоване. Зверніться до адміністратора.';
-      return;
+  function tryOpen(fromButton){
+    // деякі in-app браузери (TikTok/Instagram) блокують автоперехід без кліку
+    const allowAuto = !isTikTok || fromButton;
+    if(!allowAuto && !fromButton){ return; }
+
+    statusEl.textContent = 'Переадресація…';
+
+    if(isAndroid){
+      // 1) спроба через схему
+      window.location.href = VIBER_URI;
+      // 2) fallback на intent
+      setTimeout(()=>{ window.location.href = ANDROID_INTENT; }, 700);
+      // 3) якщо не встановлено — покажемо інсталяцію
+      setTimeout(()=>{ statusEl.textContent = 'Не відкрився Viber? Натисніть кнопку або встановіть додаток.'; showInstall(); }, 1600);
+    } else if(isIOS){
+      // iOS не підтримує intent, лише схема + fallback на App Store
+      window.location.href = VIBER_URI;
+      setTimeout(()=>{ statusEl.textContent = 'Не відкрився Viber? Натисніть кнопку або встановіть додаток.'; showInstall(); window.location.href = IOS_STORE; }, 1200);
+    } else {
+      // Desktop: просто відкриємо схему (може не працювати) і покажемо інсталяцію
+      window.location.href = VIBER_URI;
+      setTimeout(()=>{ statusEl.textContent = 'Цей пристрій може не підтримувати відкриття Viber з браузера.'; showInstall(); }, 1200);
     }
-    status.textContent = 'Переадресація…';
-    window.location.href = link;
-    setTimeout(()=>{
-      status.textContent = 'Не відкрився Viber? Натисніть «Написати в Viber».');
-    }, 1400);
   }
 
-  window.addEventListener('load', go);
-  openBtn.addEventListener('click', (e)=>{ e.preventDefault(); go(); });
+  // автоперехід відразу, але не в TikTok-вебвʼю (вимагає кліку)
+  window.addEventListener('load', function(){ tryOpen(false); });
 </script>
 </body>
 </html>
