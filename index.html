@@ -66,63 +66,49 @@
   </main>
 
 <script>
-  // ===== Налаштування =====
-  const PHONE_E164 = '+380961638781';
-  const VIBER_URI = 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
-  const ANDROID_INTENT = `intent://chat?number=${encodeURIComponent(PHONE_E164)}#Intent;scheme=viber;package=com.viber.voip;end`;
-  const IOS_STORE = 'https://apps.apple.com/app/id382617920';
-  const ANDROID_STORE = 'https://play.google.com/store/apps/details?id=com.viber.voip';
-  // ========================
+  // ====== Налаштування ======
+  const CHAT_URI = '';                           // лишаємо порожнім (використовуємо номер)
+  const PHONE_E164 = '+380961638781';            // ваш номер
+  const UTM = 'utm_source=tiktok&utm_medium=bio';// для аналітики (за потреби змініть або порожньо)
+  // ===========================
 
-  const statusEl = document.getElementById('status');
+  const status = document.getElementById('status');
   const openBtn = document.getElementById('openBtn');
-  const installBox = document.getElementById('install');
+  const installLink = document.getElementById('installLink');
 
-  const ua = navigator.userAgent || '';
-  const isAndroid = /Android/i.test(ua);
-  const isIOS = /iPhone|iPad|iPod/i.test(ua);
-  const isTikTok = /TikTok|TTWebView/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const storeUrl = isIOS
+    ? 'https://apps.apple.com/app/id382617920'
+    : 'https://play.google.com/store/apps/details?id=com.viber.voip';
+  if (installLink) installLink.href = storeUrl;
 
-  // зробимо кнопку працюючою і як <a href=...>, і через JS
-  openBtn.setAttribute('href', VIBER_URI);
-  openBtn.addEventListener('click', function(ev){
-    // не блокуємо стандартну навігацію повністю; деякі webview вимагають gesture
-    ev.preventDefault();
-    tryOpen(true);
-  });
-
-  function showInstall(){
-    const url = isIOS ? IOS_STORE : ANDROID_STORE;
-    installBox.innerHTML = `Немає Viber? <a href="${url}" target="_blank" rel="noopener">Встановити Viber</a>`;
-  }
-
-  function tryOpen(fromButton){
-    // деякі in-app браузери (TikTok/Instagram) блокують автоперехід без кліку
-    const allowAuto = !isTikTok || fromButton;
-    if(!allowAuto && !fromButton){ return; }
-
-    statusEl.textContent = 'Переадресація…';
-
-    if(isAndroid){
-      // 1) спроба через схему
-      window.location.href = VIBER_URI;
-      // 2) fallback на intent
-      setTimeout(()=>{ window.location.href = ANDROID_INTENT; }, 700);
-      // 3) якщо не встановлено — покажемо інсталяцію
-      setTimeout(()=>{ statusEl.textContent = 'Не відкрився Viber? Натисніть кнопку або встановіть додаток.'; showInstall(); }, 1600);
-    } else if(isIOS){
-      // iOS не підтримує intent, лише схема + fallback на App Store
-      window.location.href = VIBER_URI;
-      setTimeout(()=>{ statusEl.textContent = 'Не відкрився Viber? Натисніть кнопку або встановіть додаток.'; showInstall(); window.location.href = IOS_STORE; }, 1200);
-    } else {
-      // Desktop: просто відкриємо схему (може не працювати) і покажемо інсталяцію
-      window.location.href = VIBER_URI;
-      setTimeout(()=>{ statusEl.textContent = 'Цей пристрій може не підтримувати відкриття Viber з браузера.'; showInstall(); }, 1200);
+  function getDeepLink() {
+    if (CHAT_URI && CHAT_URI.trim() !== '') {
+      return 'viber://pa?chatURI=' + encodeURIComponent(CHAT_URI);
     }
+    if (PHONE_E164 && PHONE_E164.trim() !== '') {
+      return 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
+    }
+    return null;
   }
 
-  // автоперехід відразу, але не в TikTok-вебвʼю (вимагає кліку)
-  window.addEventListener('load', function(){ tryOpen(false); });
+  function tryOpen() {
+    const deep = getDeepLink();
+    if (!deep) {
+      status.textContent = 'Посилання Viber не налаштоване. Зверніться до адміністратора.';
+      return;
+    }
+    const url = deep + (UTM ? (deep.includes('?') ? '&' : '?') + UTM : '');
+    status.textContent = 'Переадресація… Якщо нічого не сталося — натисніть кнопку нижче.';
+    window.location = url;
+
+    setTimeout(() => {
+      status.textContent = 'Не відкрився Viber? Натисніть «Написати в Viber» або встановіть додаток.';
+    }, 1200);
+  }
+
+  window.addEventListener('load', tryOpen);
+  if (openBtn) openBtn.addEventListener('click', tryOpen);
 </script>
 </body>
 </html>
