@@ -2,117 +2,119 @@
 <html lang="uk">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Відкриваємо Viber</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Відкриваємо Viber…</title>
   <style>
-    body {
-      font-family: system-ui, Arial, Helvetica, sans-serif;
-      background: #f3f4f8;
-      margin: 0;
-      padding: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+    :root{
+      --bg:#f3f0ff;               /* світло-фіолетовий фон */
+      --card:#ffffff;              /* картка */
+      --primary:#7360f2;           /* фіолетовий Viber */
+      --primary-700:#5c4fe6;
+      --text:#222a3a;              /* основний текст */
+      --muted:#6b7280;             /* допоміжний текст */
+      --warn-bg:#ffefbf;           /* жовта підказка */
+      --warn-text:#3c2e00;         /* текст у жовтому блоці */
+      --radius:18px;
     }
-    .card {
-      width: 100%;
-      max-width: 480px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      text-align: center;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
+      display:flex; align-items:center; justify-content:center; padding:18px;
     }
-    h1 {
-      font-size: 20px;
-      margin: 6px 0 8px;
+    .wrap{ width:min(420px,100%); }
+
+    .panel{
+      background:var(--card);
+      border-radius:22px;
+      padding:28px 20px 18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+      text-align:center;
     }
-    p {
-      color: #333;
-      font-size: 15px;
+
+    h1{
+      margin:0 0 16px; font-size:26px; font-weight:800; color:var(--primary);
     }
-    button {
-      padding: 12px 18px;
-      border-radius: 10px;
-      border: 0;
-      font-size: 16px;
-      cursor: pointer;
+
+    .warn{
+      background:var(--warn-bg);
+      color:var(--warn-text);
+      border-radius:14px;
+      padding:14px 14px 12px;
+      text-align:left;
+      margin:0 auto 16px;
     }
-    .open {
-      background: #7360f2;
-      color: white;
+    .warn b{display:block; color:#4b2f00; font-size:16px; margin-bottom:6px}
+    .warn ol{margin:8px 0 0 20px}
+
+    .paragraph{color:#4b5563; margin:6px 0 14px}
+
+    .cta{ margin: 6px 0 12px; }
+    .btn{
+      width:100%;
+      padding:14px 16px;
+      border:0; cursor:pointer; font-weight:800; font-size:16px;
+      background:var(--primary); color:#fff; border-radius:28px;
+      box-shadow:0 10px 22px rgba(115,96,242,.35);
+      transition:transform .06s ease, box-shadow .2s ease, background .2s ease;
     }
-    .secondary {
-      margin-top: 12px;
-      font-size: 14px;
-      color: #555;
-    }
-    a.small {
-      color: #2563eb;
-      text-decoration: none;
-    }
+    .btn:active{ transform:translateY(1px); box-shadow:0 8px 18px rgba(115,96,242,.28); }
+
+    .subnote{ color:#8b8f99; font-size:13px; margin-top:8px }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Відкриваємо Viber</h1>
-    <p id="status">Спроба автоматично відкрити Viber…</p>
+  <div class="wrap">
+    <div class="panel">
+      <h1>Відкриваємо Viber...</h1>
 
-    <div style="margin-top:12px">
-      <button id="openBtn" class="open">Написати в Viber</button>
+      <div class="warn" aria-live="polite">
+        <b>⚠️ Якщо ви зайшли з TikTok і автоматична переадресація не спрацювала:</b>
+        <ol>
+          <li>Натисніть три крапки (: ) вгорі праворуч</li>
+          <li>Виберіть "Відкрити в браузері"</li>
+          <li>Ви знову опинитесь на цій сторінці</li>
+          <li>Натисніть кнопку "Написати" нижче</li>
+        </ol>
+      </div>
+
+      <p class="paragraph">Якщо автоматична переадресація не спрацювала, натисніть кнопку:</p>
+
+      <div class="cta">
+        <button id="openBtn" class="btn">Написати в Viber</button>
+      </div>
+
+      <div id="status" class="subnote">Переадресація відбувається автоматично...</div>
     </div>
-    <p class="secondary">
-      Якщо Viber не встановлено — натисніть нижче «Встановити Viber».
-    </p>
-    <p class="secondary">
-      <a id="installLink" class="small" href="#" target="_blank" rel="noopener">Встановити Viber</a>
-    </p>
   </div>
 
 <script>
-  // ====== Налаштування ======
-  const CHAT_URI = '';                  // залишаємо порожнім (використовуємо номер)
-  const PHONE_E164 = '+380961638781';   // твій номер
-  const UTM = 'utm_source=tiktok&utm_medium=bio'; // для аналітики
-  // ===========================
+  // ===== Налаштування переходу =====
+  const PHONE_E164 = '+380961638781'; // номер для відкриття Viber
+  const UTM = 'utm_source=tiktok&utm_medium=bio';
 
-  const status = document.getElementById('status');
+  const statusEl = document.getElementById('status');
   const openBtn = document.getElementById('openBtn');
-  const installLink = document.getElementById('installLink');
 
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const storeUrl = isIOS
-    ? 'https://apps.apple.com/app/id382617920'
-    : 'https://play.google.com/store/apps/details?id=com.viber.voip';
-  installLink.href = storeUrl;
-
-  function getDeepLink() {
-    if (CHAT_URI && CHAT_URI.trim() !== '') {
-      return 'viber://pa?chatURI=' + encodeURIComponent(CHAT_URI);
-    }
-    if (PHONE_E164 && PHONE_E164.trim() !== '') {
-      return 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
-    }
-    return null;
+  function viberDeepLink(){
+    const deep = 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
+    return UTM ? deep + (deep.includes('?') ? '&' : '?') + UTM : deep;
   }
 
-  function tryOpen() {
-    const deep = getDeepLink();
-    if (!deep) {
-      status.textContent = 'Посилання Viber не налаштоване. Зверніться до адміністратора.';
-      return;
-    }
-    const url = deep + (UTM ? (deep.includes('?') ? '&' : '?') + UTM : '');
-    status.textContent = 'Переадресація… Якщо нічого не сталося — натисніть кнопку нижче.';
-    window.location = url;
-
-    setTimeout(() => {
-      status.textContent = 'Не відкрився Viber? Натисніть «Написати в Viber» або встановіть додаток.';
+  function tryOpen(){
+    const url = viberDeepLink();
+    statusEl.textContent = 'Переадресація… Якщо нічого не відбулося — натисніть кнопку вище.';
+    window.location.assign(url);
+    clearTimeout(tryOpen._t);
+    tryOpen._t = setTimeout(() => {
+      statusEl.textContent = 'Не відкрився Viber? Натисніть «Написати в Viber». Якщо застосунок не встановлено — встановіть його і поверніться.';
     }, 1200);
   }
 
+  // Автоматичний запуск на завантаження
   window.addEventListener('load', tryOpen);
+  // Кнопка
   openBtn.addEventListener('click', tryOpen);
 </script>
 </body>
