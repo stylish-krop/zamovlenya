@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Відкриваємо Viber…</title>
+  <title>Відкриваємо Viber...</title>
   <style>
     :root{
-      --bg:#f3f0ff;               /* світло-фіолетовий фон */
-      --card:#ffffff;              /* картка */
-      --primary:#7360f2;           /* фіолетовий Viber */
+      --bg:#f3f0ff;
+      --card:#ffffff;
+      --primary:#7360f2;
       --primary-700:#5c4fe6;
-      --text:#222a3a;              /* основний текст */
-      --muted:#6b7280;             /* допоміжний текст */
-      --warn-bg:#ffefbf;           /* жовта підказка */
-      --warn-text:#3c2e00;         /* текст у жовтому блоці */
+      --text:#222a3a;
+      --muted:#6b7280;
+      --warn-bg:#ffefbf;
+      --warn-text:#3c2e00;
       --radius:18px;
     }
     *{box-sizing:border-box}
@@ -24,7 +24,6 @@
       display:flex; align-items:center; justify-content:center; padding:18px;
     }
     .wrap{ width:min(420px,100%); }
-
     .panel{
       background:var(--card);
       border-radius:22px;
@@ -32,11 +31,9 @@
       box-shadow:0 10px 30px rgba(0,0,0,.08);
       text-align:center;
     }
-
     h1{
       margin:0 0 16px; font-size:26px; font-weight:800; color:var(--primary);
     }
-
     .warn{
       background:var(--warn-bg);
       color:var(--warn-text);
@@ -47,9 +44,7 @@
     }
     .warn b{display:block; color:#4b2f00; font-size:16px; margin-bottom:6px}
     .warn ol{margin:8px 0 0 20px}
-
     .paragraph{color:#4b5563; margin:6px 0 14px}
-
     .cta{ margin: 6px 0 12px; }
     .btn{
       width:100%;
@@ -60,7 +55,6 @@
       transition:transform .06s ease, box-shadow .2s ease, background .2s ease;
     }
     .btn:active{ transform:translateY(1px); box-shadow:0 8px 18px rgba(115,96,242,.28); }
-
     .subnote{ color:#8b8f99; font-size:13px; margin-top:8px }
   </style>
 </head>
@@ -68,7 +62,6 @@
   <div class="wrap">
     <div class="panel">
       <h1>Відкриваємо Viber...</h1>
-
       <div class="warn" aria-live="polite">
         <b>⚠️ Якщо ви зайшли з TikTok і автоматична переадресація не спрацювала:</b>
         <ol>
@@ -78,43 +71,49 @@
           <li>Натисніть кнопку "Написати" нижче</li>
         </ol>
       </div>
-
       <p class="paragraph">Якщо автоматична переадресація не спрацювала, натисніть кнопку:</p>
-
       <div class="cta">
         <button id="openBtn" class="btn">Написати в Viber</button>
       </div>
-
       <div id="status" class="subnote">Переадресація відбувається автоматично...</div>
     </div>
   </div>
 
 <script>
-  // ===== Налаштування переходу =====
+  // ====== Налаштування ======
+  const CHAT_URI = ''; // залишаємо порожнім (тільки номер)
   const PHONE_E164 = '+380961638781'; // номер для відкриття Viber
   const UTM = 'utm_source=tiktok&utm_medium=bio';
+  // ===========================
 
   const statusEl = document.getElementById('status');
   const openBtn = document.getElementById('openBtn');
 
-  function viberDeepLink(){
-    const deep = 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
-    return UTM ? deep + (deep.includes('?') ? '&' : '?') + UTM : deep;
+  function getDeepLink() {
+    if (CHAT_URI && CHAT_URI.trim() !== '') {
+      return 'viber://pa?chatURI=' + encodeURIComponent(CHAT_URI);
+    }
+    if (PHONE_E164 && PHONE_E164.trim() !== '') {
+      return 'viber://chat?number=' + encodeURIComponent(PHONE_E164);
+    }
+    return null;
   }
 
-  function tryOpen(){
-    const url = viberDeepLink();
+  function tryOpen() {
+    const deep = getDeepLink();
+    if (!deep) {
+      statusEl.textContent = 'Посилання Viber не налаштоване. Зверніться до адміністратора.';
+      return;
+    }
+    const url = deep + (UTM ? (deep.includes('?') ? '&' : '?') + UTM : '');
     statusEl.textContent = 'Переадресація… Якщо нічого не відбулося — натисніть кнопку вище.';
-    window.location.assign(url);
-    clearTimeout(tryOpen._t);
-    tryOpen._t = setTimeout(() => {
+    window.location = url;
+    setTimeout(() => {
       statusEl.textContent = 'Не відкрився Viber? Натисніть «Написати в Viber». Якщо застосунок не встановлено — встановіть його і поверніться.';
     }, 1200);
   }
 
-  // Автоматичний запуск на завантаження
   window.addEventListener('load', tryOpen);
-  // Кнопка
   openBtn.addEventListener('click', tryOpen);
 </script>
 </body>
